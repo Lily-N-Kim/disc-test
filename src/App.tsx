@@ -8,7 +8,6 @@ import {
   Download,
   Loader2,
 } from "lucide-react";
-
 // --- 커스텀 캐릭터 SVG 컴포넌트 ---
 // TypeScript(TS) 환경에서 에러가 나지 않도록 ': any' 타입을 명시적으로 추가했습니다.
 const CharD = ({ className, style }: any) => (
