@@ -10,7 +10,8 @@ import {
 } from "lucide-react";
 
 // --- 커스텀 캐릭터 SVG 컴포넌트 ---
-const CharD = ({ className, style }) => (
+// TypeScript(TS) 환경에서 에러가 나지 않도록 ': any' 타입을 명시적으로 추가했습니다.
+const CharD = ({ className, style }: any) => (
   <svg
     viewBox="0 0 120 120"
     className={className}
@@ -64,7 +65,7 @@ const CharD = ({ className, style }) => (
   </svg>
 );
 
-const CharI = ({ className, style }) => (
+const CharI = ({ className, style }: any) => (
   <svg
     viewBox="0 0 120 120"
     className={className}
@@ -96,7 +97,7 @@ const CharI = ({ className, style }) => (
   </svg>
 );
 
-const CharS = ({ className, style }) => (
+const CharS = ({ className, style }: any) => (
   <svg
     viewBox="0 0 120 120"
     className={className}
@@ -138,7 +139,7 @@ const CharS = ({ className, style }) => (
   </svg>
 );
 
-const CharC = ({ className, style }) => (
+const CharC = ({ className, style }: any) => (
   <svg
     viewBox="0 0 120 120"
     className={className}
@@ -262,16 +263,16 @@ const COL_THEMES = [
 
 export default function App() {
   const [step, setStep] = useState("intro");
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState<{ [key: number]: number[] }>({});
   const [scores, setScores] = useState([0, 0, 0, 0]);
   const [finalTypeIndex, setFinalTypeIndex] = useState(0);
-  const [toastMessage, setToastMessage] = useState(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
-  const testContainerRef = useRef(null);
-  const resultRef = useRef(null);
+  const testContainerRef = useRef<HTMLDivElement>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
 
-  const showToast = (msg) => {
+  const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
@@ -281,7 +282,7 @@ export default function App() {
     setStep("test");
   };
 
-  const handleSelect = (qIndex, adjIndex) => {
+  const handleSelect = (qIndex: number, adjIndex: number) => {
     setAnswers((prev) => {
       const current = prev[qIndex] || [];
       const existingPos = current.indexOf(adjIndex);
@@ -310,7 +311,7 @@ export default function App() {
     });
   };
 
-  const handleResetRow = (qIndex) => {
+  const handleResetRow = (qIndex: number) => {
     setAnswers((prev) => ({ ...prev, [qIndex]: [] }));
   };
 
@@ -342,13 +343,12 @@ export default function App() {
   const handleDownloadImage = async () => {
     if (!resultRef.current) return;
     try {
-      setIsDownloading(true); // 애니메이션 멈춤 상태로 전환
+      setIsDownloading(true);
       showToast("이미지를 생성하고 있습니다. 잠시만 기다려주세요...");
 
-      // 렌더링(애니메이션 중지)이 반영될 시간을 살짝 부여 (중요!)
       await new Promise((resolve) => setTimeout(resolve, 150));
 
-      if (!window.html2canvas) {
+      if (!(window as any).html2canvas) {
         await new Promise((resolve, reject) => {
           const script = document.createElement("script");
           script.src =
@@ -359,7 +359,7 @@ export default function App() {
         });
       }
 
-      const canvas = await window.html2canvas(resultRef.current, {
+      const canvas = await (window as any).html2canvas(resultRef.current, {
         scale: 2,
         backgroundColor: "#f8fafc",
         useCORS: true,
@@ -376,7 +376,7 @@ export default function App() {
     } catch (error) {
       showToast("이미지 저장에 실패했습니다. 다시 시도해 주세요.");
     } finally {
-      setIsDownloading(false); // 다시 원상 복구
+      setIsDownloading(false);
     }
   };
 
@@ -391,7 +391,6 @@ export default function App() {
     <div className="flex flex-col items-center justify-center min-h-[85vh] text-center px-4 relative overflow-hidden animate-in fade-in zoom-in duration-500">
       <Decor />
 
-      {/* 귀여운 캐릭터 모음 */}
       <div className="relative w-full max-w-sm h-48 mb-8">
         <CharD
           className="absolute top-0 left-4 w-28 h-28 transform -rotate-12 drop-shadow-sm animate-bounce"
@@ -592,9 +591,7 @@ export default function App() {
           ref={resultRef}
           className="bg-[#f8fafc] py-10 px-4 sm:px-8 relative rounded-3xl"
         >
-          {/* html2canvas 텍스트 정렬 이슈를 완벽히 해결하기 위해 block 기반의 text-center 적용 */}
           <div className="text-center mb-8 w-full block">
-            {/* 글자가 수직으로 완벽히 가운데 오도록 flex 속성과 leading-none을 제거하고 상하 패딩을 수동으로 조절 */}
             <div className="inline-block text-slate-800 font-black text-sm mb-4 bg-white px-5 pt-2 pb-1.5 rounded-full border-2 border-slate-800 shadow-[2px_2px_0_0_#1e293b]">
               나의 업무 스타일은?
             </div>
@@ -607,7 +604,6 @@ export default function App() {
                   }`}
                   style={isDownloading ? {} : { animationDuration: "2s" }}
                 />
-                {/* leading-none 제거, inline-block 적용 및 수직 중앙을 위한 상하 패딩 (pt-1.5 pb-1) 적용 */}
                 <div
                   className={`absolute -bottom-2 -right-4 ${result.bgClass} text-slate-800 text-sm font-black px-4 pt-[6px] pb-[4px] rounded-full border-2 border-slate-800 shadow-[3px_3px_0_0_#1e293b] transform rotate-6 inline-block`}
                 >
@@ -629,7 +625,6 @@ export default function App() {
               className={`absolute top-0 left-0 w-full h-2 ${result.bgClass} border-b-2 border-slate-800`}
             ></div>
             <h3 className="font-black text-slate-800 mb-3 text-lg mt-1 block text-left">
-              {/* 여기도 마찬가지로 inline-block과 패딩으로 수직 정렬 교체 */}
               <span className="bg-slate-800 text-white px-3 pt-[6px] pb-[4px] rounded-lg text-sm inline-block">
                 특징 요약
               </span>
@@ -653,7 +648,6 @@ export default function App() {
                     key={type.id}
                     className={`flex items-center text-sm sm:text-base font-black`}
                   >
-                    {/* 좌우 텍스트 박스의 크기(w-12)를 완전히 동일하게 맞추어 중앙의 바가 정중앙에 위치하도록 수정 */}
                     <div className="w-12 text-center flex-shrink-0 text-slate-800 flex justify-center items-center">
                       {type.id}
                     </div>
